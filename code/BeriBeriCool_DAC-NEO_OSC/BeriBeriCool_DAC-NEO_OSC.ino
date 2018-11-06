@@ -21,6 +21,7 @@
   v0.2   xxOctober 2018   badgeek, multiplexer moved to library
   v0.3   5.November.2018  ChrisMicro, I2S format addapted to PT8211 I2S DAC
   v0.4   6.November 2018  dusjagr adding NEO-pixel, PDM and serial
+  v0.5   6.November 2018  dusjagr adding OSC receiver
   
   It is mandatory to keep the list of authors in this code.
   Please add your name if you improve/extend something
@@ -33,7 +34,26 @@
 #include "AnalogMultiplexer.h"
 #include "synthx.h" // change this for other synth patch
 #include "ESP8266WiFi.h" // wifi header only needed to turn it off
+#include <WiFiUdp.h>
 #include <Adafruit_NeoPixel.h> 
+
+#include <OSCMessage.h>
+#include <OSCBundle.h>
+#include <OSCData.h>
+
+char ssid[] = "dusjagrlabs";          // your network SSID (name)
+char pass[] = "sauhund13";                    // your network password
+
+// A UDP instance to let us send and receive packets over UDP
+WiFiUDP Udp;
+const IPAddress outIp(10,198,218,194);        // remote IP (not needed for receive) 192.168.43.219
+const unsigned int outPort = 9999;          // remote port (not needed for receive)
+const unsigned int localPort = 8888;        // local port to listen for UDP packets (here's where we send the packets)
+
+
+OSCErrorCode error;
+unsigned int ledState = LOW;              // LOW means led is *on*
+
 
 #define PIN D7
 
@@ -98,10 +118,32 @@ void writeDAC(uint16_t DAC) {
 
 void setup()
 {
-  WiFi.forceSleepBegin(); // turn of wifi to reduce power consumption
+  //WiFi.forceSleepBegin(); // turn of wifi to reduce power consumption
   delay(1);
   system_update_cpu_freq(160); // run MCU core with full speed
-  Serial.begin(115200);
+   Serial.begin(115200);
+
+  // Connect to WiFi network
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, pass);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.println("Starting UDP");
+  Udp.begin(localPort);
+  Serial.print("Local port: ");
+  Serial.println(Udp.localPort());
   
   //pinMode(2, INPUT); //restore GPIOs taken by i2s
   //pinMode(15, INPUT);
@@ -120,37 +162,64 @@ void setup()
   rainbowCycle (3);
 }
 
+void led(OSCMessage &msg) {
+  ledState = msg.getInt(0);
+  digitalWrite(D6, ledState);
+  Serial.print("/led: ");
+  Serial.println(ledState);
+}
+
 void slowLoop()
-{   
+{  
   static uint8_t count = 0;
   mysynth.param[count].setValue(multiplexer.read(count,2));
   if(count==0) analogWrite (D6,1023 - (multiplexer.read(count,2)));
   
-  //Serial.print(multiplexer.read(count,2));
-  //Serial.print (" \t");
+  Serial.print(multiplexer.read(count,2));
+  Serial.print (" \t");
   
   count++;
-  //if (count > 7) Serial.println();
+  if (count > 7) Serial.println();
   if (count > 7) count = 0;
   
+
 }
+
 
 void loop()
 {
   static int16_t cycle = 0;
   static uint16_t counter = 0;
   uint16_t dacValue;
-  
+
   //dacValue = mysynth.run(cycle++); // old
-  //writeDAC(dacValue^0x8000); //PDM
   //i2s_write_sample(dacValue ^ 0x8000); // old
+  //writeDAC(dacValue^0x8000); //PDM
   
   dacValue = (int32_t)mysynth.run(cycle++)-0x8000;
 
   // I2S write mono for PD8211 DAC needs left justified data
   i2s_write_sample(dacValue << 1);
-
+  
   counter++;
+
+  OSCBundle bundle;
+  int size = Udp.parsePacket();
+
+  if (size > 0) {
+    while (size--) {
+      bundle.fill(Udp.read());
+    }
+    if (!bundle.hasError()) {
+      bundle.dispatch("/led1", led);
+      Serial.print(".");
+      rainbowCycle (1);
+    } else {
+      error = bundle.getError();
+      Serial.print("error: ");
+      Serial.println(error);
+    }
+  }
 
   if (counter > SAMPLINGFREQUENCY/250)
   {
@@ -160,6 +229,8 @@ void loop()
 
 
 }
+
+
 
 // Slightly different, this makes the rainbow equally distributed throughout
 void rainbowCycle(uint8_t wait) {
