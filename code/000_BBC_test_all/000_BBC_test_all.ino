@@ -2,7 +2,7 @@
   test all
 
   Blinks all leds, reads potis to serial interface, makes sound.
-  
+
 
   ************************************************************************
   This sketch is free software; you can redistribute it and/or modify
@@ -17,9 +17,14 @@
 
 
 #include "hardwarePlatform.h"
+#include "I2S.h"
+
+
+I2SClass I2S;
 
 
 Adafruit_NeoPixel neoPixel = Adafruit_NeoPixel(NEOPIXELNUMLEDS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
+
 
 #define LEDDELAY_MS 100
 
@@ -105,25 +110,25 @@ void showAnalogChannels()
 
 void initSound()
 {
-  i2s_begin();
-  i2s_set_rate(SAMPLINGFREQUENCY);
+  // PT8211 needs I2S_LEFT_JUSTIFIED_MODE
+  I2S.begin(I2S_LEFT_JUSTIFIED_MODE, SAMPLINGFREQUENCY, 16);
 }
 
 void endSound()
 {
-  i2s_end();
+  I2S.end();
 }
 
 void testSound(uint8_t type)
 {
-  uint16_t dacValue;
+  int16_t dacValue;
 
   for (int n = 0; n < SAMPLINGFREQUENCY / 5; n++)
   {
     dacValue = random(-32768, +32767);
-
-    // I2S write mono for PD8211 DAC needs left justified data
-    i2s_write_sample(dacValue << 1);
+    if (type == 0)I2S.write(dacValue, 0);
+    if (type == 1)I2S.write(0, dacValue);
+    if (type == 2)I2S.write(dacValue);
   }
 }
 
@@ -136,8 +141,6 @@ void setup()
   system_update_cpu_freq(160); // run MCU core with full speed
 
   initLed_BUILTIN();
-
-
 
   pinMode(LED, OUTPUT);
   digitalWrite(LED, HIGH); // led off ( led is low active )
@@ -153,21 +156,21 @@ void setup()
 void loop()
 {
   showAnalogChannels();
-  
+
   testLed(5);
-  
+
   testSound(0);
 
   showAnalogChannels();
-  
+
   endSound();  // the I2S interface has to be stopped when using the LED_BUILTIN
   initLed_BUILTIN();
-  testLed_BUILTIN(5); 
+  testLed_BUILTIN(5);
   initSound(); // after LED_BUILTIN test turn on the sound again
-  
+
   testSound(1);
 
   showAnalogChannels();
-  
+
   testNeoPixel();
 }

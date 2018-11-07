@@ -14,8 +14,7 @@
 
 #include <Arduino.h>
 #include "ESP8266WiFi.h"
-#include <i2s.h>
-#include <i2s_reg.h>
+#include "I2S.h"
 #include <Adafruit_NeoPixel.h>
 
 // BeriBeriCool pin definitions
