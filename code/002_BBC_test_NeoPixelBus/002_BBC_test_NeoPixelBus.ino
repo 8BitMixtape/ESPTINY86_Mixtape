@@ -3,8 +3,13 @@
 
   This example uses the NeoPixelBus library instead of the Adafruit library.
 
-  At the moment the Adafruit library does not work with 160MHz ESP8266 setup.
-  The NeoPixelBus library works but violates Arduino naming conventions like
+  For the Adafruit library it is necessary to setup the correct CPUFrequency 
+  in the Arduino-IDE:
+
+  Arduino-IDE => Tools => CPUFrequency=160MHz
+  
+  The NeoPixelBus library seems to work independent of this setup
+  but violates Arduino naming conventions like
 
   neoPixel.Begin // NeoPixelBus: wrong
   neoPixel.begin // Adafruit NeoPixel: right
@@ -33,7 +38,6 @@
 #define BBC_NEOPIXELPIN     D7
 #define BBC_NEOPIXELNUMLEDS 8
 
-//declare
 NeoPixelBus<NeoRgbFeature, NeoEsp8266BitBang400KbpsMethod> neoPixel(BBC_NEOPIXELNUMLEDS, BBC_NEOPIXELPIN);
 
 void setup()
