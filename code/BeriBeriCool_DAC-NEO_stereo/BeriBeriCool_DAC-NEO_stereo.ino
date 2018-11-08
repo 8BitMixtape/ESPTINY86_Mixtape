@@ -21,32 +21,26 @@
   v0.2   xxOctober 2018   badgeek, multiplexer moved to library
   v0.3   5.November.2018  ChrisMicro, I2S format addapted to PT8211 I2S DAC
   v0.4   6.November 2018  dusjagr adding NEO-pixel, PDM and serial
-  v0.5   7.November 2018  stereo with Arduino compatible I2S
+  v0.5   8.November 2018  stereo with Arduino compatible I2S and 2 synth opjects
 
   It is mandatory to keep the list of authors in this code.
   Please add your name if you improve/extend something
 
 */
 
-#include <Arduino.h>
-#include <i2s.h>
-#include <i2s_reg.h>
+#include "hardwarePlatform.h"
 #include "AnalogMultiplexer.h"
 #include "synthx.h" // change this for other synth patch
-#include "ESP8266WiFi.h" // wifi header only needed to turn it off
 #include "I2S.h"
+
 
 #include <Adafruit_NeoPixel.h>
 
 I2SClass I2S;
 
-#define PIN D7
-
-#define NUM_LEDS 8
-
 #define BRIGHTNESS 30
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NEOPIXELNUMLEDS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
 
 byte neopix_gamma[] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -69,15 +63,10 @@ byte neopix_gamma[] = {
 
 #define SAMPLINGFREQUENCY 44100
 
-// multipexer select pins
-#define MULTIPLEXED_ANALOG_INPUT A0
-#define MUX_A D0
-#define MUX_B D1
-#define MUX_C D2
-
 AnalogMultiplexerPin multiplexer;
 
-SynthTest mysynth;
+SynthTest synthLeft;
+SynthTest synthRight;
 
 void setup()
 {
@@ -89,7 +78,7 @@ void setup()
   // PT8211 needs I2S_LEFT_JUSTIFIED_MODE
   I2S.begin(I2S_LEFT_JUSTIFIED_MODE, SAMPLINGFREQUENCY, 16);
 
-  multiplexer.setup(MUX_A, MUX_B, MUX_C, MULTIPLEXED_ANALOG_INPUT);
+  multiplexer.setup(MULTIPLEXER_PINA, MULTIPLEXER_PINB, MULTIPLEXER_PINC, ADC);
 
   strip.setBrightness(BRIGHTNESS);
   strip.begin();
@@ -103,14 +92,15 @@ void setup()
 void slowLoop()
 {
   static uint8_t count = 0;
-  mysynth.param[count].setValue(multiplexer.read(count, 2));
-  if (count == 0) analogWrite (D6, 1023 - (multiplexer.read(count, 2)));
-
-  //Serial.print(multiplexer.read(count,2));
-  //Serial.print (" \t");
-
+  if(count==POTI1)  synthLeft.param[0].setValue(multiplexer.read(count, 2));
+  if(count==POTI2)  synthRight.param[0].setValue(multiplexer.read(count, 2)+10);
+  if(count==POTI3)
+  {
+    uint16_t value=multiplexer.read(count, 2);
+    synthLeft.param[1].setValue(value);
+    synthRight.param[1].setValue(value); 
+  }
   count++;
-  //if (count > 7) Serial.println();
   if (count > 7) count = 0;
 }
 
@@ -118,11 +108,13 @@ void loop()
 {
   static int16_t cycle = 0;
   static uint16_t counter = 0;
-  uint16_t dacValue;
+  uint16_t left,right;
 
-  dacValue = (int32_t)mysynth.run(cycle++) - 0x8000;
+  left = (int32_t)synthLeft.run(cycle) - 0x8000;
+  right = (int32_t)synthRight.run(cycle++) - 0x8000;
+
   // stereo output
-  I2S.write(dacValue,dacValue);
+  I2S.write(left,right);
 
   counter++;
 

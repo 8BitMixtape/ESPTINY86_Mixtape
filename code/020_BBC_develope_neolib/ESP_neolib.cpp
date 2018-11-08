@@ -52,10 +52,11 @@ uint16_t getPoti(uint8_t channel)
 void updateNeolib()
 {
   static uint8_t count = 0;
+  selectMultiplexer(count);
   Multiplexervalues[count] = analogRead(ADC);
   count++;
   if (count > NUMBERMULTIPLEXERCHANNELS) count = 0;
-  selectMultiplexer(count);
+
 }
 
 void neobegin()
