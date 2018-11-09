@@ -46,7 +46,7 @@ char pass[] = "transistor";                    // your network password
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
-const IPAddress outIp(192,168,1,255);        // remote IP (not needed for receive) 192.168.43.219
+const IPAddress outIp(192,168,1,35);        // remote IP (not needed for receive) 192.168.43.219
 const unsigned int outPort = 9999;          // remote port (not needed for receive)
 const unsigned int localPort = 8888;        // local port to listen for UDP packets (here's where we send the packets)
 
@@ -60,7 +60,7 @@ int noise = 4;
 
 #define NUM_LEDS 8
 
-#define BRIGHTNESS 30
+#define BRIGHTNESS 0
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -122,7 +122,7 @@ void setup()
   //WiFi.forceSleepBegin(); // turn of wifi to reduce power consumption
   delay(1);
   system_update_cpu_freq(160); // run MCU core with full speed
-   Serial.begin(115200);
+   //Serial.begin(115200);
 
   // Connect to WiFi network
   Serial.println();
@@ -160,6 +160,12 @@ void setup()
   
   pinMode(D6, OUTPUT);
   digitalWrite(D6, LOW); // turn on LED
+  OSCMessage msg("/1/led1");
+    msg.add(1);
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
   rainbowCycle (3);
 }
 
@@ -178,6 +184,7 @@ void slowLoop()
   
   Serial.print(multiplexer.read(count,noise));
   Serial.print (" \t");
+  
   if (count == 0) {
     OSCMessage msg("/1/pot1");
     msg.add(multiplexer.read(count,noise));
@@ -186,6 +193,7 @@ void slowLoop()
     Udp.endPacket();
     msg.empty();
   }
+  
   if (count == 1) {
     OSCMessage msg("/1/pot2");
     msg.add(multiplexer.read(count,noise));
@@ -210,6 +218,7 @@ void slowLoop()
     Udp.endPacket();
     msg.empty();
   }
+  
   count++;
   if (count > 7) Serial.println();
   if (count > 7) count = 0;
@@ -245,6 +254,12 @@ void loop()
     if (!bundle.hasError()) {
       bundle.dispatch("/led1", led);
       Serial.print(".");
+      OSCMessage msg("/1/led2");
+        msg.add(1);
+        Udp.beginPacket(outIp, outPort);
+        msg.send(Udp);
+       Udp.endPacket();
+       msg.empty();
       //rainbowCycle (1);
     } else {
       error = bundle.getError();
