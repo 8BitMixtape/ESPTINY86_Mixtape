@@ -39,8 +39,9 @@ void ICACHE_RAM_ATTR updateSound()
   while (!i2s_is_full())
   {
     static int16_t dacValue;
-    // stereo output
     dacValue = (int32_t)mysynth.run(cycle++) - 0x8000; //convert unsigned with offset to zero line centered signed
+
+    // stereo output
     I2S.write(dacValue, dacValue);
   }
   updateNeolib();
@@ -81,9 +82,12 @@ void loop()
   
   pixelNumber++;
   if (pixelNumber > NEOPIXELNUMLEDS)pixelNumber = 0;
-  
-  //update
+
   neoPixel.setPixelColor(pixelNumber, COLOR_GREEN);
+  if(getButton()==BUTTON_LEFT)  neoPixel.setPixelColor(pixelNumber, COLOR_RED);
+  if(getButton()==BUTTON_RIGHT) neoPixel.setPixelColor(pixelNumber, COLOR_BLUE);
+  if(getButton()==BUTTON_LEFT+BUTTON_RIGHT) neoPixel.setPixelColor(pixelNumber, COLOR_PINK);
+  
   neoPixel.show();
 
   wait_ms(100);

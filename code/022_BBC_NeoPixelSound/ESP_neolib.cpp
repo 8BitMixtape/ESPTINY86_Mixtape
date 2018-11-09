@@ -52,11 +52,27 @@ uint16_t getPoti(uint8_t channel)
 void updateNeolib()
 {
   static uint8_t count = 0;
-  selectMultiplexer(count);
+  
   Multiplexervalues[count] = analogRead(ADC);
   count++;
   if (count > NUMBERMULTIPLEXERCHANNELS) count = 0;
+  
+  selectMultiplexer(count);
 
+}
+
+uint8_t getButton()
+{
+  uint8_t  button = BUTTON_NONE;
+  uint16_t pinVoltage;
+
+  pinVoltage = Multiplexervalues[BUTTONS];
+
+  if ( pinVoltage < Vbutton_left  ) button = BUTTON_LEFT;
+  if ( pinVoltage < Vbutton_right ) button = BUTTON_RIGHT;
+  if ( pinVoltage < Vbutton_both  ) button = BUTTON_LEFT + BUTTON_RIGHT;
+
+  return button;
 }
 
 void neobegin()
