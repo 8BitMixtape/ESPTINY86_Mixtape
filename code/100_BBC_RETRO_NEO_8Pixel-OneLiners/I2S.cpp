@@ -114,5 +114,3 @@ uint32_t I2SClass::availableForWrite()
 {
   return i2s_available();
 }
-
-
