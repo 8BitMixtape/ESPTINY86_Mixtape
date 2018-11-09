@@ -1,5 +1,5 @@
 /*
-  sound and neopixel
+  sound and neopixel and buttons
 
   This example uses the Adafruit library.
 
@@ -83,10 +83,12 @@ void loop()
   pixelNumber++;
   if (pixelNumber > NEOPIXELNUMLEDS)pixelNumber = 0;
 
-  neoPixel.setPixelColor(pixelNumber, COLOR_GREEN);
-  if(getButton()==BUTTON_LEFT)  neoPixel.setPixelColor(pixelNumber, COLOR_RED);
-  if(getButton()==BUTTON_RIGHT) neoPixel.setPixelColor(pixelNumber, COLOR_BLUE);
+  neoPixel.setPixelColor(pixelNumber, COLOR_RED);
+  if(getButton()==BUTTON_LEFT)  neoPixel.setPixelColor(pixelNumber, COLOR_GREEN);
+  if(getButton()==BUTTON_RIGHT) neoPixel.setPixelColor(pixelNumber, COLOR_YELLOW);
   if(getButton()==BUTTON_LEFT+BUTTON_RIGHT) neoPixel.setPixelColor(pixelNumber, COLOR_PINK);
+  
+  if(wasButtonPressed()==BUTTON_LEFT)  toggleLed();
   
   neoPixel.show();
 

@@ -36,6 +36,7 @@ extern Adafruit_NeoPixel pixels;
 
 void     updateNeolib();
 void     neobegin();
+void     toggleLed();
 uint8_t  getButton();
 uint8_t  wasButtonPressed();
 
