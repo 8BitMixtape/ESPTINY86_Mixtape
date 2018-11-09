@@ -41,12 +41,12 @@
 #include <OSCBundle.h>
 #include <OSCData.h>
 
-char ssid[] = "dusjagrlabs";          // your network SSID (name)
-char pass[] = "sauhund13";                    // your network password
+char ssid[] = "mechartlab";          // your network SSID (name)
+char pass[] = "transistor";                    // your network password
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
-const IPAddress outIp(10,198,218,194);        // remote IP (not needed for receive) 192.168.43.219
+const IPAddress outIp(192,168,1,255);        // remote IP (not needed for receive) 192.168.43.219
 const unsigned int outPort = 9999;          // remote port (not needed for receive)
 const unsigned int localPort = 8888;        // local port to listen for UDP packets (here's where we send the packets)
 
@@ -54,6 +54,7 @@ const unsigned int localPort = 8888;        // local port to listen for UDP pack
 OSCErrorCode error;
 unsigned int ledState = LOW;              // LOW means led is *on*
 
+int noise = 4;
 
 #define PIN D7
 
@@ -172,12 +173,43 @@ void led(OSCMessage &msg) {
 void slowLoop()
 {  
   static uint8_t count = 0;
-  mysynth.param[count].setValue(multiplexer.read(count,2));
-  if(count==0) analogWrite (D6,1023 - (multiplexer.read(count,2)));
+  mysynth.param[count].setValue(multiplexer.read(count,noise));
+  if(count==0) analogWrite (D6,1023 - (multiplexer.read(count,noise)));
   
-  Serial.print(multiplexer.read(count,2));
+  Serial.print(multiplexer.read(count,noise));
   Serial.print (" \t");
-  
+  if (count == 0) {
+    OSCMessage msg("/1/pot1");
+    msg.add(multiplexer.read(count,noise));
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
+  }
+  if (count == 1) {
+    OSCMessage msg("/1/pot2");
+    msg.add(multiplexer.read(count,noise));
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
+  }
+  if (count == 2) {
+    OSCMessage msg("/1/pot3");
+    msg.add(multiplexer.read(count,noise));
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
+  }
+  if (count == 3) {
+    OSCMessage msg("/1/pot4");
+    msg.add(multiplexer.read(count,noise));
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
+  }
   count++;
   if (count > 7) Serial.println();
   if (count > 7) count = 0;
@@ -213,7 +245,7 @@ void loop()
     if (!bundle.hasError()) {
       bundle.dispatch("/led1", led);
       Serial.print(".");
-      rainbowCycle (1);
+      //rainbowCycle (1);
     } else {
       error = bundle.getError();
       Serial.print("error: ");
