@@ -18,10 +18,12 @@
 */
 
 #include "neolib.h"
-#include "I2S.h"
+//#include "I2S.h"
 #include "synthx.h"
+//#include <Adafruit_NeoPixel.h> 
 
-I2SClass I2S;
+Adafruit_NeoPixel neoPixel = Adafruit_NeoPixel(NEOPIXELNUMLEDS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
+//I2SClass I2S;
 
 #define SAMPLINGFREQUENCY 44100
 
@@ -41,6 +43,7 @@ void slowLoop()
   mysynth.param[2].setValue(getPoti(POTI_LEFT_UNDER));
   mysynth.param[3].setValue(getPoti(POTI_RIGHT_UNDER));
 }
+/*
 
 void ICACHE_RAM_ATTR updateSound()
 {
@@ -57,8 +60,10 @@ void ICACHE_RAM_ATTR updateSound()
   slowLoop();
 
 }
-
+*/
 #define CPUFREQUENCY 160
+
+
 
 void setup()
 {
@@ -67,25 +72,42 @@ void setup()
   system_update_cpu_freq(CPUFREQUENCY); // run MCU core with full speed
 
   // PT8211 needs I2S_LEFT_JUSTIFIED_MODE
-  I2S.begin(I2S_LEFT_JUSTIFIED_MODE, SAMPLINGFREQUENCY, 16);
-  I2S.onTransmit(updateSound);
+  //I2S.begin(I2S_LEFT_JUSTIFIED_MODE, SAMPLINGFREQUENCY, 16);
+  //I2S.onTransmit(updateSound);
   //Serial.begin(115200);
-  neobegin();
-  pinMode(LED, OUTPUT);
+  //neobegin();
+  //pinMode(LED, OUTPUT);
+
+  neoPixel.begin();
 }
 
 
+//******************************************************************************
+
+#define LEDDELAY_MS 100
+
+void testNeoPixel()
+{
+  uint32_t red = neoPixel.Color(10, 0, 0);
+  uint32_t dark = neoPixel.Color(0, 0, 0);
+
+  for (int n = 0; n < NEOPIXELNUMLEDS; n++)
+  {
+    neoPixel.setPixelColor(n, red);
+    neoPixel.show();
+    delay(LEDDELAY_MS);
+
+    neoPixel.setPixelColor(n, dark);
+    neoPixel.show();
+    delay(LEDDELAY_MS);
+  }
+}
 
 void loop()
 {
+  testNeoPixel();
 
-  for (int n = 0; n < 100; n++)
-  {
-
-    delay(1);
-  }
-
-  toggleLed(LED);
+  //toggleLed(LED);
 
 }
 

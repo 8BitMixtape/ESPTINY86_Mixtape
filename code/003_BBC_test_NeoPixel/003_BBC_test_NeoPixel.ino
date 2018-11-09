@@ -21,17 +21,17 @@
   v0.2   7. November 2018  ChrisMicro  changed to Adafruit_NeoPixel library
 */
 
+
 #include <Arduino.h>
 #include "ESP8266WiFi.h"
-#include <i2s.h>
-#include <i2s_reg.h>
-#include <Adafruit_NeoPixel.h> 
+#include <Adafruit_NeoPixel.h>
 
-#define BBC_LED             D6 // low active
-#define BBC_NEOPIXELPIN     D7
-#define BBC_NEOPIXELNUMLEDS 8
+#define LED             D6 // low active
+#define NEOPIXELPIN     D7
+#define NEOPIXELNUMLEDS 8
 
-Adafruit_NeoPixel neoPixel = Adafruit_NeoPixel(BBC_NEOPIXELNUMLEDS, BBC_NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
+
+Adafruit_NeoPixel neoPixel = Adafruit_NeoPixel(NEOPIXELNUMLEDS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
 
 void setup()
 {
@@ -47,7 +47,7 @@ void loop()
   static int pixelNumber = 0; 
   
   pixelNumber++;
-  if (pixelNumber > BBC_NEOPIXELNUMLEDS)pixelNumber = 0;
+  if (pixelNumber > NEOPIXELNUMLEDS)pixelNumber = 0;
 
   uint32_t red=neoPixel.Color(10,0,0);
   uint32_t dark=neoPixel.Color(0,0,0);
