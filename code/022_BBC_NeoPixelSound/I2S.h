@@ -10,8 +10,9 @@
 typedef enum 
 {
   I2S_PHILIPS_MODE,
-  I2S_RIGHT_JUSTIFIED_MODE,
-  I2S_LEFT_JUSTIFIED_MODE
+  I2S_RIGHT_JUSTIFIED_MODE, // PT8211 DAC uses this mode
+  I2S_LEFT_JUSTIFIED_MODE,
+  I2S_PDM_MODE // pulse density mode for direct RC-low pass connection at pin
 } i2s_mode_t;
 
 class I2SClass 
@@ -28,7 +29,7 @@ class I2SClass
 
     void     write(int16_t *data, size_t size);
 
-    void     onTransmit(void (*callback) (void)); // seems not to work yet
+    void     onTransmit(void (*callback) (void)); // call back shall have "void ICACHE_RAM_ATTR" attribute 
     
     i2s_mode_t i2sMode;
 

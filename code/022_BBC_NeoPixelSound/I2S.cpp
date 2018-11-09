@@ -29,7 +29,6 @@ uint8_t I2SClass::begin(i2s_mode_t mode, uint32_t sampleRate, uint8_t bitsPerSam
 
   i2s_begin();
   i2s_set_rate(sampleRate);
-  //i2s_set_callback(toggleLed);
   return true;
 }
 
@@ -75,6 +74,25 @@ void I2SClass::write(int16_t leftData, int16_t rightData)
     i2s_write_sample(oldValue);
 
     oldValue = value&0xFFFFFFFE;
+  }else if (i2sMode == I2S_PDM_MODE)
+  {
+    //******** PDM From Jan Ostman **********
+    static uint32_t i2sACC;
+    static uint16_t err;
+    uint16_t DAC;
+    DAC = ((int32_t)leftData + rightData) >> 1;
+    for (uint8_t i = 0; i < 32; i++)
+    {
+      i2sACC = i2sACC << 1;
+      if (DAC >= err) {
+        i2sACC |= 1;
+        err += 0xFFFF - DAC;
+      } else {
+        err -= DAC;
+      }
+    }
+    i2s_write_sample(i2sACC);
+    //**************************************
   }
 }
 

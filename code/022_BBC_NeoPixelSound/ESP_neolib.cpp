@@ -20,7 +20,7 @@
 
 #include "neolib.h"
 
-#define NUMBERMULTIPLEXERCHANNELS 7
+#define NUMBERMULTIPLEXERCHANNELS 6
 uint16_t Multiplexervalues[NUMBERMULTIPLEXERCHANNELS];
 
 void initMultiplexer()

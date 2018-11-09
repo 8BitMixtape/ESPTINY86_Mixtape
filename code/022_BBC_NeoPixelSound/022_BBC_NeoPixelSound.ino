@@ -32,18 +32,10 @@ I2SClass I2S;
 
 #define SAMPLINGFREQUENCY 44100
 
-void slowLoop()
-{
-  mysynth.param[0].setValue(getPoti(POTI_LEFT));
-  mysynth.param[1].setValue(getPoti(POTI_RIGHT));
-  mysynth.param[2].setValue(getPoti(POTI_LEFT_UNDER));
-  mysynth.param[3].setValue(getPoti(POTI_RIGHT_UNDER));
-}
-
 void ICACHE_RAM_ATTR updateSound()
 {
   static int16_t cycle = 0;
-
+  
   while (!i2s_is_full())
   {
     static int16_t dacValue;
@@ -51,6 +43,12 @@ void ICACHE_RAM_ATTR updateSound()
     dacValue = (int32_t)mysynth.run(cycle++) - 0x8000; //convert unsigned with offset to zero line centered signed
     I2S.write(dacValue, dacValue);
   }
+  updateNeolib();
+  
+  mysynth.param[0].setValue(getPoti(POTI_LEFT));
+  mysynth.param[1].setValue(getPoti(POTI_RIGHT));
+  mysynth.param[2].setValue(getPoti(POTI_LEFT_UNDER));
+  mysynth.param[3].setValue(getPoti(POTI_RIGHT_UNDER));
 }
 
 void setup()
@@ -72,8 +70,7 @@ void wait_ms(int milliSeconds)
 {
   for(int n=0;n<milliSeconds;n++)
   {
-    updateNeolib();
-    slowLoop();
+    //slowLoop();
     delay(1);
   }
 }
