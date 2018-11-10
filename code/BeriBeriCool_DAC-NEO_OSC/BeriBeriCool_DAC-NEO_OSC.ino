@@ -41,14 +41,14 @@
 #include <OSCBundle.h>
 #include <OSCData.h>
 
-//char ssid[] = "mechartlab";          // your network SSID (name)
-//char pass[] = "transistor";                    // your network password
-char ssid[] = "MayaStubli 2.4GHz";          // your network SSID (name)
-char pass[] = "mamaya83";                    // your network password
+char ssid[] = "mechartlab";          // your network SSID (name)
+char pass[] = "transistor";                    // your network password
+//char ssid[] = "MayaStubli 2.4GHz";          // your network SSID (name)
+//char pass[] = "mamaya83";                    // your network password
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
-const IPAddress outIp(192,168,1,140);        // remote IP (not needed for receive) 192.168.43.219
+const IPAddress outIp(192,168,1,36);        // remote IP (not needed for receive) 192.168.43.219
 const unsigned int outPort = 9999;          // remote port (not needed for receive)
 const unsigned int localPort = 8888;        // local port to listen for UDP packets (here's where we send the packets)
 
@@ -57,12 +57,12 @@ OSCErrorCode error;
 unsigned int ledState = LOW;              // LOW means led is *on*
 
 int noise = 4;
-
+int messageCount = 0;
 #define PIN D7
 
 #define NUM_LEDS 8
 
-#define BRIGHTNESS 30
+#define BRIGHTNESS 0
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -168,62 +168,62 @@ void setup()
     msg.send(Udp);
     Udp.endPacket();
     msg.empty();
-  rainbowCycle (3);
+  //rainbowCycle (3);
 }
 
-void led(OSCMessage &msg) {
-  ledState = msg.getInt(0);
-  digitalWrite(D6, ledState);
-  Serial.print("/led: ");
-  Serial.println(ledState);
+//callback function wwwhhhhyyyy???
+void fader(OSCMessage &msg) {
+  Serial.println("received");
+  int fader1 = msg.getInt(1);
+  Serial.println(fader1);
 }
 
 void slowLoop()
 {  
-  static uint8_t count = 0;
-  mysynth.param[count].setValue(multiplexer.read(count,noise));
-  if(count==0) analogWrite (D6,1023 - (multiplexer.read(count,noise)));
+  static uint8_t chan = 0;
+  int value = multiplexer.read(chan,noise);
+  mysynth.param[chan].setValue(value);
   
-  Serial.print(multiplexer.read(count,noise));
-  Serial.print (" \t");
+  //Serial.print(value);
+  //Serial.print (" \t");
   
-  if (count == 0) {
-    OSCMessage msg("/ESPTINY1/pot1");
-    msg.add(multiplexer.read(count,noise));
+  if (chan == 0) {
+    OSCMessage msg("/esptiny/pot1");
+    msg.add(value);
     Udp.beginPacket(outIp, outPort);
     msg.send(Udp);
     Udp.endPacket();
     msg.empty();
   }
   
-  if (count == 1) {
-    OSCMessage msg("/ESPTINY1/pot2");
-    msg.add(multiplexer.read(count,noise));
+  if (chan == 1) {
+    OSCMessage msg("/esptiny/pot2");
+    msg.add(value);
     Udp.beginPacket(outIp, outPort);
     msg.send(Udp);
     Udp.endPacket();
     msg.empty();
   }
-  if (count == 2) {
-    OSCMessage msg("/ESPTINY1/pot3");
-    msg.add(multiplexer.read(count,noise));
+  if (chan == 2) {
+    OSCMessage msg("/esptiny/pot3");
+    msg.add(value);
     Udp.beginPacket(outIp, outPort);
     msg.send(Udp);
     Udp.endPacket();
     msg.empty();
   }
-  if (count == 3) {
-    OSCMessage msg("/ESPTINY1/pot4");
-    msg.add(multiplexer.read(count,noise));
+  if (chan == 3) {
+    OSCMessage msg("/esptiny/pot4");
+    msg.add(value);
     Udp.beginPacket(outIp, outPort);
     msg.send(Udp);
     Udp.endPacket();
     msg.empty();
   }
   
-  count++;
-  if (count > 7) Serial.println();
-  if (count > 7) count = 0;
+  chan++;
+  //if (chan > 7) Serial.println();
+  if (chan > 7) chan = 0;
   
 
 }
@@ -254,16 +254,12 @@ void loop()
       bundle.fill(Udp.read());
     }
     if (!bundle.hasError()) {
-      bundle.dispatch("/led1", led);
-      Serial.print(".");
-      OSCMessage msg("/ESPTINY1/led2");
-        msg.add(1);
-        Udp.beginPacket(outIp, outPort);
-        msg.send(Udp);
-       Udp.endPacket();
-       msg.empty();
-      //rainbowCycle (1);
-    } else {
+      Serial.print("bundleOK ");
+      messageCount++;
+      Serial.println(messageCount);
+      bundle.dispatch("/esptiny/fader1",fader);
+      } 
+    else {
       error = bundle.getError();
       Serial.print("error: ");
       Serial.println(error);
