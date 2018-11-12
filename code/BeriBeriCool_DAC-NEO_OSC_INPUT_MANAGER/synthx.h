@@ -12,15 +12,15 @@ class SynthTest : public Synth
 
     SynthTest(Input_Manager * inputManager)
     {
-      ModuleExternalInput *pot1 = new ModuleExternalInput(1,inputManager);
-      ModuleExternalInput *pot2 = new ModuleExternalInput(2,inputManager);
+      // ModuleExternalInput *pot1 = new ModuleExternalInput(1,inputManager);
+      // ModuleExternalInput *pot2 = new ModuleExternalInput(2,inputManager);
       ModuleExternalInput *osc1 = new ModuleExternalInput("/osc1",inputManager);
-      ModuleExternalInput *kool = new ModuleExternalInput("/kool",inputManager);
+      ModuleExternalInput *osc2 = new ModuleExternalInput("/osc2",inputManager);
 
       //Define Node Objects
       ModuleWavetableOsc *moduleWavetableOsc_1 = new ModuleWavetableOsc();
       moduleWavetableOsc_1->frequency_input = osc1;
-      moduleWavetableOsc_1->wavetable_input = pot1;
+      moduleWavetableOsc_1->wavetable_input = osc2;
       this->last_module = moduleWavetableOsc_1;          
     }
 };
