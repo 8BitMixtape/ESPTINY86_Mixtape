@@ -1,0 +1,47 @@
+
+#ifndef SYNTHTEST_H
+#define SYNTHTEST_H
+#include "Synth.h"
+#include "Modules.h"
+#include "ModuleExternalInput.h"
+
+class SynthTest : public Synth
+{
+    public:
+    ModuleConstant param[8];
+
+    SynthTest(Input_Manager * inputManager)
+    {
+      ModuleExternalInput *pot1 = new ModuleExternalInput(1,inputManager);
+      ModuleExternalInput *pot2 = new ModuleExternalInput(2,inputManager);
+      ModuleExternalInput *osc1 = new ModuleExternalInput("/osc1",inputManager);
+      ModuleExternalInput *kool = new ModuleExternalInput("/kool",inputManager);
+
+      //Define Node Objects
+      ModuleWavetableOsc *moduleWavetableOsc_1 = new ModuleWavetableOsc();
+      moduleWavetableOsc_1->frequency_input = pot1;
+      moduleWavetableOsc_1->wavetable_input = pot2;
+      this->last_module = moduleWavetableOsc_1;          
+    }
+};
+#endif // SYNTHTEST_H    
+
+/* 
+
+This is espnode86 stuff do not edit
+
+--BEGINESPNODEPATCH--
+djIuMS4xCm5ldHdvcmsvYWRkLXBhdGNoIHNhZDQgcm9vdApwYXRjaC9vcGVuIHNhZDQKcGF0Y2gvYWRkLW5vZGUgc2FkNCA0OTJvIGVzcG5vZGUvbm9kZWxpc3QgRXNwbm9kZSUyMFBhbGV0dGUKbm9kZS90dXJuLW9uIDQ5Mm8KcGF0Y2gvYWRkLW5vZGUgc2FkNCBr
+eDZyIHdhdmUvb3NjaWxsYXRvciBPc2NpbGxhdG9yCm5vZGUvdHVybi1vbiBreDZyCm5vZGUvYWRkLWlubGV0IGt4NnIgenU2aSBlc3Bub2RlL3N0cmluZyBmcmVxdWVuY3lfaW5wdXQgZnJlcXVlbmN5X2lucHV0Cm5vZGUvYWRkLWlubGV0IGt4NnIgcGo2NSBlc3Bu
+b2RlL3N0cmluZyB3YXZldGFibGVfaW5wdXQgd2F2ZXRhYmxlX2lucHV0Cm5vZGUvYWRkLW91dGxldCBreDZyIGt2cXYgZXNwbm9kZS9zdHJpbmcgT3V0IE91dApwYXRjaC9hZGQtbm9kZSBzYWQ0IHM3dWogb3V0cHV0L2RhYyBBdWRpbyUyMERBQwpub2RlL3R1cm4t
+b24gczd1agpub2RlL2FkZC1pbmxldCBzN3VqIGhxdDMgZXNwbm9kZS9zdHJpbmcgYXVkaW9faW5wdXQgYXVkaW9faW5wdXQKcGF0Y2gvYWRkLW5vZGUgc2FkNCAyaXJ1IGlucHV0L2NvbnN0YW50IENvbnN0YW50JTdDMC0xMDIzCm5vZGUvdHVybi1vbiAyaXJ1Cm5v
+ZGUvYWRkLWlubGV0IDJpcnUgN2V1NyBlc3Bub2RlL3N0cmluZyB1c2VyLXZhbHVlIHVzZXItdmFsdWUKbm9kZS9hZGQtb3V0bGV0IDJpcnUgNDZwNSBlc3Bub2RlL3N0cmluZyBudW1iZXIgbnVtYmVyCnBhdGNoL2FkZC1ub2RlIHNhZDQgb2Q2MSBpbnB1dC9jb25z
+dGFudCBDb25zdGFudCU3QzAtMTAyMwpub2RlL3R1cm4tb24gb2Q2MQpub2RlL2FkZC1pbmxldCBvZDYxIDRmMWQgZXNwbm9kZS9zdHJpbmcgdXNlci12YWx1ZSB1c2VyLXZhbHVlCm5vZGUvYWRkLW91dGxldCBvZDYxIDA1dHcgZXNwbm9kZS9zdHJpbmcgbnVtYmVy
+IG51bWJlcgpub2RlL21vdmUgNDkybyAzMCAyMApub2RlL21vdmUga3g2ciA2MTcgMTcwCm5vZGUvbW92ZSBzN3VqIDg4NyAzMDMKbm9kZS9tb3ZlIDJpcnUgMzc4IDEwNwpub2RlL21vdmUgb2Q2MSAzNzIgMjM2Cm91dGxldC9jb25uZWN0IGt2cXYgaHF0MyAwZTJ4
+Cm91dGxldC9jb25uZWN0IDQ2cDUgenU2aSB1a2t5Cm91dGxldC9jb25uZWN0IDA1dHcgcGo2NSBoMnZwCm5vZGUvdXBkYXRlLWlubGV0IGt4NnIgenU2aSBmcmVxdWVuY3lfaW5wdXQgMTAwCm5vZGUvdXBkYXRlLWlubGV0IGt4NnIgcGo2NSB3YXZldGFibGVfaW5w
+dXQgMTAKbm9kZS91cGRhdGUtaW5sZXQgczd1aiBocXQzIGF1ZGlvX2lucHV0IDAKbm9kZS91cGRhdGUtb3V0bGV0IDJpcnUgNDZwNSBudW1iZXIgMTAwCm5vZGUvdXBkYXRlLWlubGV0IDJpcnUgN2V1NyB1c2VyLXZhbHVlIDEwMApub2RlL3VwZGF0ZS1vdXRsZXQg
+b2Q2MSAwNXR3IG51bWJlciAxMApub2RlL3VwZGF0ZS1pbmxldCBvZDYxIDRmMWQgdXNlci12YWx1ZSAxMA==
+--ENDESPNODEPATCH--
+
+*/
+
