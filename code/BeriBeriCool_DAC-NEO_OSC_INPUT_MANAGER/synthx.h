@@ -19,8 +19,8 @@ class SynthTest : public Synth
 
       //Define Node Objects
       ModuleWavetableOsc *moduleWavetableOsc_1 = new ModuleWavetableOsc();
-      moduleWavetableOsc_1->frequency_input = pot1;
-      moduleWavetableOsc_1->wavetable_input = pot2;
+      moduleWavetableOsc_1->frequency_input = osc1;
+      moduleWavetableOsc_1->wavetable_input = pot1;
       this->last_module = moduleWavetableOsc_1;          
     }
 };
