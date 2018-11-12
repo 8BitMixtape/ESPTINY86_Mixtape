@@ -88,18 +88,6 @@ AnalogMultiplexerPin multiplexer;
 
 SynthTest mysynth(&inputManager);
 
-void writeDAC(uint16_t DAC) {
-  for (uint8_t i=0;i<32;i++) {
-    i2sACC=i2sACC<<1;
-    if(DAC >= err) {
-      i2sACC|=1;
-      err += 0xFFFF-DAC;
-    } else {
-      err -= DAC;
-    }
-  }
-  bool flag=i2s_write_sample(i2sACC);
-}
 
 #ifdef DEBUG_SERIAL
 void printInputList(Input_Manager * inputManager)
