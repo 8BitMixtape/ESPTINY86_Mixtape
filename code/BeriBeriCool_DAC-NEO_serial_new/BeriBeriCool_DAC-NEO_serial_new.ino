@@ -17,19 +17,19 @@
   (at your option) any later version.
   ********************* list of outhors **********************************
 
-  v0.1   24.August.2018   ChrisMicro  initial version
-  v0.2   xxOctober 2018   badgeek, multiplexer moved to library
-  v0.3   5.November.2018  ChrisMicro, I2S format addapted to PT8211 I2S DAC
-  v0.4   6.November 2018  dusjagr adding NEO-pixel, PDM and serial
-  
+  v0.1   24.August   2018  ChrisMicro  initial version
+  v0.2   30.August   2018  badgeek,    multiplexer moved to library
+  v0.3   05.November.2018  ChrisMicro, I2S format addapted to PT8211 I2S DAC
+  v0.4   06.November 2018  dusjagr adding NEO-pixel, PDM and serial
+  v0.5   13.November 2018  ChisMicro, I2S driver replaced
+    
   It is mandatory to keep the list of authors in this code.
   Please add your name if you improve/extend something
 
 */
 
 #include <Arduino.h>
-#include <i2s.h>
-#include <i2s_reg.h>
+#include "I2S.h"
 #include "AnalogMultiplexer.h"
 #include "synthx.h" // change this for other synth patch
 #include "ESP8266WiFi.h" // wifi header only needed to turn it off
@@ -64,11 +64,6 @@ byte neopix_gamma[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
-extern "C" {
-#include "user_interface.h"
-}
-
-
 #define SAMPLINGFREQUENCY 44100
 
 // multipexer select pins
@@ -82,36 +77,28 @@ AnalogMultiplexerPin multiplexer;
 
 SynthTest mysynth;
 
-/*
-//PDM From Jan Ostman
-uint32_t i2sACC;
-uint16_t err;
-void writeDAC(uint16_t DAC) {
-  for (uint8_t i=0;i<32;i++) {
-    i2sACC=i2sACC<<1;
-    if(DAC >= err) {
-      i2sACC|=1;
-      err += 0xFFFF-DAC;
-    } else {
-      err -= DAC;
-    }
-  }
-  bool flag=i2s_write_sample(i2sACC);
-}
-*/
-
 void setup()
 {
   WiFi.forceSleepBegin(); // turn of wifi to reduce power consumption
   delay(1);
   system_update_cpu_freq(160); // run MCU core with full speed
   Serial.begin(115200);
+
+/* i2s_mode
   
+  I2S audio dacs from different manufacturers need dedicated setups.
+
+  i2s mode                     DAC
+  =========================    ============================
+  I2S_PHILIPS_MODE             MAS98357a,UDA1334A  
+  I2S_RIGHT_JUSTIFIED_MODE,    PT8211
+  I2S_PDM_MODE                 pulse density mode for direct RC-low 
+                               pass connection at pin and no hardware DAC
+
+ */
+  I2S.begin(I2S_LEFT_JUSTIFIED_MODE, SAMPLINGFREQUENCY, 16);
   //pinMode(2, INPUT); //restore GPIOs taken by i2s
   //pinMode(15, INPUT);
-  
-  //i2s_begin();
-  //i2s_set_rate(SAMPLINGFREQUENCY);
 
   multiplexer.setup(MUX_A, MUX_B, MUX_C, MULTIPLEXED_ANALOG_INPUT);
   
@@ -145,15 +132,9 @@ void loop()
   static uint16_t counter = 0;
   uint16_t dacValue;
   
-  //dacValue = mysynth.run(cycle++); // old
-  //writeDAC(dacValue^0x8000); //PDM
-  //i2s_write_sample(dacValue ^ 0x8000); // old
-
   
   dacValue = (int32_t)mysynth.run(cycle++)-0x8000;
 
-  // I2S write mono for PD8211 DAC needs left justified data
-  //i2s_write_sample(dacValue << 1);
   I2S.write(dacValue);
   
   counter++;
@@ -163,7 +144,6 @@ void loop()
     counter = 0;
     slowLoop();
   }
-
 
 }
 
