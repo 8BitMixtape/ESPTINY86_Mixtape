@@ -184,6 +184,35 @@ void loop()
     } 
   }
   //- - - - - - - - - - - - OSC - - - - - - - - - - - - 
+  
+  //- - - - - - - - - - OSC BUNDLE - - - - - - - - - - -
+  // OSCMessage osc_msg_rcv;
+  // OSCBundle osc_msg_rcv_bnd;
+
+  // int size = Udp.parsePacket();
+  // if (size > 0) {
+  //   while (size--) {
+  //     osc_msg_rcv_bnd.fill(Udp.read());
+  //   }
+  //   if (!osc_msg_rcv_bnd.hasError()) {
+  //     for(int i=0; i<inputManager.osc.size(); ++i) {
+
+  //         OSCMessage msg = osc_msg_rcv_bnd.getOSCMessage(0);
+
+  //         if(msg.fullMatch(inputManager.osc[i]->address, 0))
+  //         {
+  //           #ifdef DEBUG_SERIAL
+  //           Serial.print(inputManager.osc[i]->address);
+  //           Serial.print(" VAL: ");
+  //           Serial.println(msg.getFloat(0));            
+  //           #endif
+  //           inputManager.osc[i]->setValue(msg.getFloat(0)*1023);
+  //         }
+  //     }
+  //   } 
+  // }
+  //- - - - - - - - - - OSC BUNDLE - - - - - - - - - - -
+
 
 
   //- - - - - - - - - - - - POT - - - - - - - - - - - - 
