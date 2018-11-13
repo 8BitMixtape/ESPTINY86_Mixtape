@@ -1,4 +1,4 @@
-#N canvas 155 177 1440 878 12;
+#N canvas 663 0 777 878 12;
 #X obj 363 318 udpsend;
 #X msg 363 286 disconnect;
 #X obj 363 217 packOSC;
@@ -10,6 +10,10 @@
 #X msg 290 145 /osc2 \$1;
 #X floatatom 363 124 5 0 0 0 - - -;
 #X floatatom 290 123 5 0 0 0 - - -;
+#X floatatom 444 122 5 0 0 0 - - -;
+#X floatatom 527 123 5 0 0 0 - - -;
+#X msg 444 144 /osc3 \$1;
+#X msg 527 145 /osc4 \$1;
 #X connect 0 0 3 0;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
@@ -19,3 +23,7 @@
 #X connect 7 0 2 0;
 #X connect 8 0 6 0;
 #X connect 9 0 7 0;
+#X connect 10 0 12 0;
+#X connect 11 0 13 0;
+#X connect 12 0 2 0;
+#X connect 13 0 2 0;

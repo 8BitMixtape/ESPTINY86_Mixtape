@@ -48,9 +48,17 @@
 
 #define SAMPLINGFREQUENCY 44100
 #define MULTIPLEXED_ANALOG_INPUT A0
-#define MUX_A D0
-#define MUX_B D1
-#define MUX_C D2
+
+//esp86
+// #define MUX_A D0
+// #define MUX_B D1
+// #define MUX_C D2
+
+//proto badgeek
+#define MUX_A D1
+#define MUX_B D2
+#define MUX_C D3
+
 #define NOISE 4
 #define PIN D7
 #define NUM_LEDS 8
@@ -58,6 +66,7 @@
 #define LOCAL_PORT 8888
 #define OUT_PORT 9999
 #define DEBUG_SERIAL
+// #define USE_OSC_BUNDLE
 
 #define WIFI_SSID "RUMAH"
 #define WIFI_PASS "rumah4321"
@@ -162,6 +171,7 @@ void loop()
   //- - - - - - - - - - - - DAC - - - - - - - - - - - - 
 
 
+  #ifndef USE_OSC_BUNDLE
   //- - - - - - - - - - - - OSC - - - - - - - - - - - - 
   OSCMessage osc_msg_rcv;
   int size = Udp.parsePacket();
@@ -182,37 +192,37 @@ void loop()
           }
       }
     } 
-  }
+  }  
   //- - - - - - - - - - - - OSC - - - - - - - - - - - - 
-  
+  #else
   //- - - - - - - - - - OSC BUNDLE - - - - - - - - - - -
-  // OSCMessage osc_msg_rcv;
-  // OSCBundle osc_msg_rcv_bnd;
+  OSCMessage osc_msg_rcv;
+  OSCBundle osc_msg_rcv_bnd;
 
-  // int size = Udp.parsePacket();
-  // if (size > 0) {
-  //   while (size--) {
-  //     osc_msg_rcv_bnd.fill(Udp.read());
-  //   }
-  //   if (!osc_msg_rcv_bnd.hasError()) {
-  //     for(int i=0; i<inputManager.osc.size(); ++i) {
+  int size = Udp.parsePacket();
+  if (size > 0) {
+    while (size--) {
+      osc_msg_rcv_bnd.fill(Udp.read());
+    }
+    if (!osc_msg_rcv_bnd.hasError()) {
+      for(int i=0; i<inputManager.osc.size(); ++i) {
 
-  //         OSCMessage msg = osc_msg_rcv_bnd.getOSCMessage(0);
+          OSCMessage msg = osc_msg_rcv_bnd.getOSCMessage(0);
 
-  //         if(msg.fullMatch(inputManager.osc[i]->address, 0))
-  //         {
-  //           #ifdef DEBUG_SERIAL
-  //           Serial.print(inputManager.osc[i]->address);
-  //           Serial.print(" VAL: ");
-  //           Serial.println(msg.getFloat(0));            
-  //           #endif
-  //           inputManager.osc[i]->setValue(msg.getFloat(0)*1023);
-  //         }
-  //     }
-  //   } 
-  // }
+          if(msg.fullMatch(inputManager.osc[i]->address, 0))
+          {
+            #ifdef DEBUG_SERIAL
+            Serial.print(inputManager.osc[i]->address);
+            Serial.print(" VAL: ");
+            Serial.println(msg.getFloat(0));            
+            #endif
+            inputManager.osc[i]->setValue(msg.getFloat(0)*1023);
+          }
+      }
+    } 
+  }
   //- - - - - - - - - - OSC BUNDLE - - - - - - - - - - -
-
+  #endif
 
 
   //- - - - - - - - - - - - POT - - - - - - - - - - - - 
