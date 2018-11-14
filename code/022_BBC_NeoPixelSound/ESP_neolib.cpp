@@ -21,7 +21,7 @@
 #include "neolib.h"
 
 #define NUMBERMULTIPLEXERCHANNELS 6
-uint16_t Multiplexervalues[NUMBERMULTIPLEXERCHANNELS];
+volatile uint16_t Multiplexervalues[NUMBERMULTIPLEXERCHANNELS];
 uint8_t ButtonWasPressedValue = BUTTON_NONE;
 
 
@@ -48,7 +48,7 @@ void selectMultiplexer(uint8_t channel)
 
 uint16_t analogReadScaled(uint8_t channel)
 {
-  uint16_t value = analogRead(channel);
+  uint16_t value;
   value = Multiplexervalues[channel];
   return value;
 }
