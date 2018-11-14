@@ -66,7 +66,9 @@
 #define LOCAL_PORT 8888
 #define OUT_PORT 9999
 #define DEBUG_SERIAL
-// #define USE_OSC_BUNDLE
+//FOR VCV RACK & LEMUR APP
+#define USE_OSC_BUNDLE
+#define USE_LEMUR_APP
 
 #define WIFI_SSID "RUMAH"
 #define WIFI_PASS "rumah4321"
@@ -216,7 +218,11 @@ void loop()
             Serial.print(" VAL: ");
             Serial.println(msg.getFloat(0));            
             #endif
-            inputManager.osc[i]->setValue(msg.getFloat(0)*1023);
+            #ifndef USE_LEMUR_APP
+            inputManager.osc[i]->setValue(msg.getInt(0));
+            #else
+            inputManager.osc[i]->setValue(msg.getInt(0)*1023);
+            #endif
           }
       }
     } 
