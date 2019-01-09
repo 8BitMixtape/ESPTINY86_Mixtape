@@ -48,7 +48,7 @@ char pass[] = "transistor";                    // your network password
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
-const IPAddress outIp(192,168,1,36);        // remote IP (not needed for receive) 192.168.43.219
+const IPAddress outIp(192,168,1,38);        // remote IP (not needed for receive) 192.168.43.219
 const unsigned int outPort = 9999;          // remote port (not needed for receive)
 const unsigned int localPort = 8888;        // local port to listen for UDP packets (here's where we send the packets)
 
@@ -62,7 +62,7 @@ int messageCount = 0;
 
 #define NUM_LEDS 8
 
-#define BRIGHTNESS 0
+#define BRIGHTNESS 30
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -168,14 +168,26 @@ void setup()
     msg.send(Udp);
     Udp.endPacket();
     msg.empty();
-  //rainbowCycle (3);
+    rainbowCycle (3);
 }
 
 //callback function wwwhhhhyyyy???
-void fader(OSCMessage &msg) {
-  Serial.println("received");
-  int fader1 = msg.getInt(1);
-  Serial.println(fader1);
+void fader1(OSCMessage &msg) {
+  int fader1 = msg.getFloat(0);
+  mysynth.param[7].setValue(fader1);
+}
+
+//callback function wwwhhhhyyyy???
+void fader2(OSCMessage &msg) {
+  int fader2 = msg.getFloat(0);
+  mysynth.param[8].setValue(fader2);
+}
+
+//callback function wwwhhhhyyyy???
+void toggle1(OSCMessage &msg) {
+  int toggle1 = msg.getFloat(0);
+  mysynth.param[8].setValue(toggle1);
+  Serial.println(toggle1);
 }
 
 void slowLoop()
@@ -186,7 +198,7 @@ void slowLoop()
   
   //Serial.print(value);
   //Serial.print (" \t");
-  
+  /*
   if (chan == 0) {
     OSCMessage msg("/esptiny/pot1");
     msg.add(value);
@@ -220,10 +232,33 @@ void slowLoop()
     Udp.endPacket();
     msg.empty();
   }
+  */
+
+  OSCBundle bundle;
+  int size = Udp.parsePacket();
+
+  if (size > 0) {
+    while (size--) {
+      bundle.fill(Udp.read());
+    }
+    if (!bundle.hasError()) {
+      //Serial.print("bundleOK ");
+      messageCount++;
+      //Serial.println(messageCount);
+      bundle.dispatch("/esptiny/fader1",fader1);
+      bundle.dispatch("/esptiny/fader2",fader2);
+      //bundle.dispatch("/esptiny/toggle1",toggle1);
+      } 
+    else {
+      error = bundle.getError();
+      Serial.print("error: ");
+      Serial.println(error);
+    }
+  }
   
   chan++;
   //if (chan > 7) Serial.println();
-  if (chan > 7) chan = 0;
+  if (chan > 6) chan = 0;
   
 
 }
@@ -245,26 +280,6 @@ void loop()
   i2s_write_sample(dacValue << 1);
   
   counter++;
-
-  OSCBundle bundle;
-  int size = Udp.parsePacket();
-
-  if (size > 0) {
-    while (size--) {
-      bundle.fill(Udp.read());
-    }
-    if (!bundle.hasError()) {
-      Serial.print("bundleOK ");
-      messageCount++;
-      Serial.println(messageCount);
-      bundle.dispatch("/esptiny/fader1",fader);
-      } 
-    else {
-      error = bundle.getError();
-      Serial.print("error: ");
-      Serial.println(error);
-    }
-  }
 
   if (counter > SAMPLINGFREQUENCY/250)
   {

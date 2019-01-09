@@ -8,7 +8,7 @@
 class SynthTest : public Synth
 {
     public:
-    ModuleConstant param[8];
+    ModuleConstant param[10];
 
     SynthTest()
     {
@@ -27,15 +27,15 @@ class SynthTest : public Synth
   moduleDelay_1->feedback_input = new ModuleConstant(800);
   moduleDelay_1->length_input = new ModuleConstant(900);
   moduleLowpassFilter_1->resonance_input = new ModuleConstant(100);
-  moduleLFO_2->wavetable_input = new ModuleConstant(400);
+  moduleLFO_2->wavetable_input = &param[0];
   moduleWavetableOsc_1->frequency_input=moduleLFO_1;
   moduleVCA_2->audio_input=moduleVCA_1;
   moduleDelay_1->audio_input=moduleVCA_2;
   moduleDelay_1->mix_input= &param[3];
   moduleVCA_1->audio_input=moduleWavetableOsc_1;
-  moduleLFO_1->frequency_input= &param[0];
+  moduleLFO_1->frequency_input= &param[7];
   moduleLFO_1->wavetable_input= &param[1];
-  moduleWavetableOsc_1->wavetable_input= &param[6];
+  moduleWavetableOsc_1->wavetable_input= &param[8];
   moduleLowpassFilter_1->audio_input=moduleDelay_1;
   moduleLFO_2->frequency_input= &param[2];
   moduleLowpassFilter_1->cutoff_input=moduleLFO_2;
