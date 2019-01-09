@@ -2,8 +2,10 @@
 
 There are various versions of the ESPTINY86_Mixtape.
 
+
 ### Links:
-[Home of ESPTINY86](https://github.com/esptiny86/espsynth86)
+* [Audio Design Tool](https://esptiny86.github.io/espnode86)
+* [Home of ESPTINY86](https://github.com/esptiny86/espsynth86)
 
 ## Version BeriBeriCool ESPTINY66 
 

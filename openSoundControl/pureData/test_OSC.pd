@@ -1,0 +1,143 @@
+#N canvas 837 230 956 665 10;
+#N canvas 101 270 654 500 mixtape_receiver 0;
+#X obj 148 183 cnv 15 248 348 empty empty empty 20 12 0 14 -33289 -66577
+0;
+#X obj 133 13 oscparse;
+#X obj 131 -19 netreceive -u -b;
+#X symbolatom 95 107 10 0 0 0 - - -, f 10;
+#X symbolatom 22 107 10 0 0 0 - - -, f 10;
+#X obj 283 231 moonlib/mknob 60 100 0 1023 0 0 empty empty empty -2
+-6 0 8 -258106 -12225 -1 7953 1;
+#X obj 208 50 list trim;
+#X obj 64 74 unpack s s f;
+#X obj 322 128 route pot1;
+#X obj 244 128 route pot2;
+#X obj 200 230 moonlib/mknob 60 100 0 1023 0 0 empty empty empty -2
+-6 0 8 -258106 -12225 -1 6243 1;
+#X obj 153 205 vsl 30 128 0 1023 0 0 empty empty empty 0 -9 0 10 -258089
+-12225 -1 4035 1;
+#X obj 163 125 route pot3;
+#X obj 362 205 vsl 30 128 0 1023 0 0 empty empty empty 0 -9 0 10 -258089
+-12225 -1 7053 1;
+#X obj 396 127 route pot4;
+#X obj 99 -46 inlet;
+#X obj 332 153 outlet;
+#X obj 406 158 outlet;
+#X obj 249 152 outlet;
+#X obj 174 154 outlet;
+#X obj 376 30 inlet;
+#X obj 291 83 route ESPTINY1;
+#X obj 505 126 route led1;
+#X obj 156 187 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 187 323 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 532 162 route sw1;
+#X obj 209 302 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X obj 300 302 tgl 30 0 empty empty empty 17 7 0 10 -4038 -1 -1 0 1
+;
+#X obj 533 197 route sw2;
+#X symbolatom 328 185 10 0 0 0 - - -, f 10;
+#X obj 46 188 list;
+#X obj 60 241 unpack s f;
+#X floatatom 288 186 5 0 0 0 - - -, f 5;
+#X obj 338 321 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 507 96 route led2;
+#X obj 154 351 hsl 232 24 0 1023 0 0 empty empty empty -2 -8 0 10 -258101
+-1 -1 15200 1;
+#X obj 526 262 route fader1;
+#X obj 153 382 hsl 232 24 0 1023 0 0 empty empty empty -2 -8 0 10 -258101
+-1 -1 4488 1;
+#X obj 153 414 hsl 232 24 0 1023 0 0 empty empty empty -2 -8 0 10 -258101
+-1 -1 4437 1;
+#X obj 152 443 hsl 232 24 0 1023 0 0 empty empty empty -2 -8 0 10 -258101
+-1 -1 8562 1;
+#X obj 525 294 route fader2;
+#X obj 536 339 route fader3;
+#X obj 535 372 route fader4;
+#X obj 157 477 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X obj 195 477 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X obj 233 477 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X obj 273 477 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X obj 313 476 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X obj 355 477 tgl 30 0 empty empty empty 17 7 0 10 -4040 -1 -1 0 1
+;
+#X connect 1 0 6 0;
+#X connect 2 0 1 0;
+#X connect 4 0 23 0;
+#X connect 6 0 7 0;
+#X connect 6 0 21 0;
+#X connect 7 0 4 0;
+#X connect 7 1 3 0;
+#X connect 8 0 5 0;
+#X connect 8 0 16 0;
+#X connect 9 0 10 0;
+#X connect 9 0 18 0;
+#X connect 12 0 11 0;
+#X connect 12 0 19 0;
+#X connect 14 0 13 0;
+#X connect 14 0 17 0;
+#X connect 15 0 2 0;
+#X connect 15 0 30 0;
+#X connect 20 0 21 1;
+#X connect 20 0 29 0;
+#X connect 21 0 8 0;
+#X connect 21 0 9 0;
+#X connect 21 0 12 0;
+#X connect 21 0 14 0;
+#X connect 21 0 22 0;
+#X connect 21 0 25 0;
+#X connect 21 0 28 0;
+#X connect 21 0 34 0;
+#X connect 21 0 36 0;
+#X connect 21 0 40 0;
+#X connect 21 0 41 0;
+#X connect 21 0 42 0;
+#X connect 22 0 23 0;
+#X connect 22 0 24 0;
+#X connect 25 0 26 0;
+#X connect 28 0 27 0;
+#X connect 30 0 31 0;
+#X connect 31 1 32 0;
+#X connect 34 0 33 0;
+#X connect 36 0 35 0;
+#X connect 40 0 37 0;
+#X connect 41 0 38 0;
+#X connect 42 0 39 0;
+#X coords 0 -1 1 1 250 350 1 147 182;
+#X restore 70 165 pd mixtape_receiver;
+#X msg 72 100 listen 0;
+#X msg 181 87 listen 9999;
+#X floatatom 84 545 5 0 0 0 - - -, f 5;
+#X floatatom 154 548 5 0 0 0 - - -, f 5;
+#X floatatom 231 549 5 0 0 0 - - -, f 5;
+#X floatatom 287 548 5 0 0 0 - - -, f 5;
+#X msg 264 87 symbol ESPTINY1;
+#X msg 266 114 symbol touch1;
+#X msg 183 112 listen 8888;
+#X obj 84 16 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 87 61 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 21 15 ESPTINY86;
+#X text 28 60 touchOSC;
+#X connect 0 0 3 0;
+#X connect 0 1 4 0;
+#X connect 0 2 5 0;
+#X connect 0 3 6 0;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 7 0 0 1;
+#X connect 8 0 0 1;
+#X connect 9 0 0 0;
+#X connect 10 0 2 0;
+#X connect 10 0 7 0;
+#X connect 11 0 9 0;
+#X connect 11 0 8 0;
