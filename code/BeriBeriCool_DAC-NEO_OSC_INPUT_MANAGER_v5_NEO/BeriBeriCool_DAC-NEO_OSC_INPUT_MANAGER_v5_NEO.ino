@@ -37,7 +37,7 @@
 #include <i2s.h>
 #include <i2s_reg.h>
 #include <WiFiUdp.h>
-//#include <Adafruit_NeoPixel.h> 
+#include <Adafruit_NeoPixel.h> 
 #include <OSCMessage.h>
 #include <OSCBundle.h>
 #include <OSCData.h>
@@ -63,7 +63,7 @@
 #define NOISE 4
 #define PIN D7
 #define NUM_LEDS 8
-#define BRIGHTNESS 0
+#define BRIGHTNESS 100
 #define LOCAL_PORT 8888
 #define OUT_PORT 9999
 #define DEBUG_SERIAL
@@ -71,13 +71,17 @@
 //#define USE_OSC_BUNDLE
 //#define USE_LEMUR_APP
 
-#define WIFI_SSID "GaudiLabs"
-#define WIFI_PASS "versonet"
+
+//#define WIFI_SSID "mechartlab"
+//#define WIFI_PASS "transistor"
+
+#define WIFI_SSID "dusjagrlabs"
+#define WIFI_PASS "sauhund13"
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
 
-const IPAddress outIp(192,168,1,37); // remote IP (not needed for receive) 192.168.43.219
+const IPAddress outIp(192,168,43,55); // remote IP (not needed for receive) 192.168.43.219
  
 Input_Manager inputManager;
 
@@ -86,7 +90,7 @@ unsigned int ledState = LOW; // LOW means led is *on*
 char ssid[] = WIFI_SSID; // your network SSID (name)
 char pass[] = WIFI_PASS; // your network password
 
-//Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
 extern "C" {
 #include "user_interface.h"
@@ -144,6 +148,12 @@ void setup()
   Udp.begin(LOCAL_PORT);
   pinMode(D6, OUTPUT);
   digitalWrite(D6, LOW); // turn on LED
+
+  strip.setBrightness(BRIGHTNESS);
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
+  
+  rainbowCycle (3);
   
 }
 
@@ -244,4 +254,63 @@ void loop()
   
   analogWrite(D6,inputManager.osc[2]->getValue());
   
+}
+
+// Slightly different, this makes the rainbow equally distributed throughout
+void rainbowCycle(uint8_t wait) {
+  uint16_t i, j;
+
+  for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
+    for(i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+
+void rainbow(uint8_t wait) {
+  uint16_t i, j;
+
+  for(j=0; j<256; j++) {
+    for(i=0; i<strip.numPixels(); i++) {
+      strip.setPixelColor(i, Wheel((i+j) & 255));
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+
+// Fill the dots one after the other with a color
+void colorWipe(uint32_t c, uint8_t wait) {
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, c);
+    strip.show();
+    delay(wait);
+  }
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3,0);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3,0);
+  }
+  WheelPos -= 170;
+  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
+}
+
+uint8_t red(uint32_t c) {
+  return (c >> 16);
+}
+uint8_t green(uint32_t c) {
+  return (c >> 8);
+}
+uint8_t blue(uint32_t c) {
+  return (c);
 }

@@ -71,8 +71,8 @@
 //#define USE_OSC_BUNDLE
 //#define USE_LEMUR_APP
 
-#define WIFI_SSID "GaudiLabs"
-#define WIFI_PASS "versonet"
+#define WIFI_SSID "mechartlab"
+#define WIFI_PASS "transistor"
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
